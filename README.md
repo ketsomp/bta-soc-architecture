@@ -150,14 +150,6 @@ Customer-facing booking workflow that generates transaction and payment telemetr
 
 ---
 
-### Fleet Monitoring Interface
-
-Fleet lookup and vehicle monitoring system supporting GPS spoofing simulations.
-
-
-
----
-
 ### Graylog Investigation Dashboard
 
 Centralized log monitoring environment used to investigate generated events and security alerts.
