@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BTA Customer Ticket Status</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body class="workspace-page">
+    <main class="workspace-shell">
+      <section class="hero-band">
+        <div class="hero-copy">
+          <p class="eyebrow">Ticket Tracking</p>
+          <h1>Check Ticket Status</h1>
+          <p class="subtitle">
+            Search by ticket number or passenger details, render the matching ticket records, and
+            verify the corresponding lookup event in Graylog.
+          </p>
+        </div>
+        <div class="hero-actions">
+          <nav class="page-nav">
+            <a class="nav-link" href="/customer/dashboard">Customer Dashboard</a>
+            <a class="nav-link" href="/customer/book-ticket">Book Ticket</a>
+            <a class="nav-link" href="/customer/buses">Buses In Operation</a>
+            <a class="nav-link active" href="/customer/ticket-status">Ticket Status</a>
+          </nav>
+          <form method="post" action="/logout">
+            <button class="secondary" type="submit">Log Out</button>
+          </form>
+        </div>
+      </section>
+
+      <section class="detail-layout">
+        <article class="detail-card detail-card-wide">
+          <div class="card-topline">
+            <p class="eyebrow">Lookup Form</p>
+            <span class="status-pill warn">GET /api/customer/ticket-status</span>
+          </div>
+          <h2>Ticket Status Search</h2>
+          <p class="section-copy">
+            The lookup emits `customer_ticket_status_lookup` with the same filters submitted below.
+            Use an exact ticket number for a precise match or combine passenger, contact, bus, and
+            status filters for a broader search.
+          </p>
+
+          <form
+            class="detail-form"
+            method="get"
+            action="/api/customer/ticket-status"
+            data-console-form="ticket-status"
+          >
+            <div class="form-grid">
+              <label>
+                <span>Ticket Number</span>
+                <input type="text" name="ticket_number" value="BTA-24001" />
+              </label>
+              <label>
+                <span>Passenger Name</span>
+                <input type="text" name="passenger_name" value="Ananya" />
+              </label>
+              <label>
+                <span>Passenger Contact</span>
+                <input type="text" name="passenger_contact" value="9876500011" />
+              </label>
+              <label>
+                <span>Bus Number</span>
+                <input type="text" name="bus_number" value="KA-01-FM-1142" />
+              </label>
+              <label>
+                <span>Status</span>
+                <select name="status">
+                  <option value="all">All</option>
+                  <option value="booked">Booked</option>
+                  <option value="issued">Issued</option>
+                  <option value="validated">Validated</option>
+                </select>
+              </label>
+              <label>
+                <span>Result Limit</span>
+                <input type="number" name="limit" min="1" max="50" value="10" />
+              </label>
+              <label>
+                <span>Operator Label</span>
+                <input type="text" name="operator_label" value="customer-status-check" />
+              </label>
+            </div>
+            <div class="form-actions">
+              <button type="submit">Check Ticket Status</button>
+              <a class="ghost-link" href="/customer/dashboard">Back To Dashboard</a>
+            </div>
+          </form>
+        </article>
+
+        <article class="detail-card">
+          <div class="card-topline">
+            <p class="eyebrow">Graylog Signals</p>
+            <span class="status-pill success">Structured JSON</span>
+          </div>
+          <h2>Expected Events</h2>
+          <ul class="detail-list">
+            <li>`customer_ticket_status_lookup` with the ticket and passenger filters you chose.</li>
+            <li>`http_access` for the lookup request.</li>
+          </ul>
+          <div class="chip-wrap">
+            <span class="data-chip">message:customer_ticket_status_lookup</span>
+            <span class="data-chip">ticket_number_filter</span>
+            <span class="data-chip">status_filter</span>
+          </div>
+        </article>
+      </section>
+
+      <section class="detail-layout">
+        <article class="detail-card detail-card-wide">
+          <div class="card-topline">
+            <p class="eyebrow">Ticket Results</p>
+            <span class="status-pill neutral">Rendered Response</span>
+          </div>
+          <div id="ticket-status-summary" class="result-empty">
+            Submit a lookup to render matching ticket records and query metadata.
+          </div>
+          <div class="table-wrap">
+            <table class="results-table">
+              <thead>
+                <tr>
+                  <th>Ticket</th>
+                  <th>Passenger</th>
+                  <th>Contact</th>
+                  <th>Route</th>
+                  <th>Bus</th>
+                  <th>Seat</th>
+                  <th>Status</th>
+                  <th>Travel Date</th>
+                </tr>
+              </thead>
+              <tbody id="ticket-status-table-body">
+                <tr>
+                  <td colspan="8" class="table-placeholder">No tickets loaded yet.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </article>
+
+        <article class="detail-card">
+          <div class="card-topline">
+            <p class="eyebrow">Raw API Body</p>
+            <span class="status-pill neutral">JSON</span>
+          </div>
+          <pre id="console-response" class="response-pre">Run the console to inspect the response body.</pre>
+        </article>
+      </section>
+    </main>
+    <script src="/console.js"></script>
+  </body>
+</html>

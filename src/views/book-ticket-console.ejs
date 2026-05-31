@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BTA Customer Ticket Booking</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body class="workspace-page">
+    <main class="workspace-shell">
+      <section class="hero-band">
+        <div class="hero-copy">
+          <p class="eyebrow">Customer Booking</p>
+          <h1>Book A Transit Ticket</h1>
+          <p class="subtitle">
+            Submit the booking from the browser, receive the generated ticket number immediately,
+            and use the payment terminal field to trigger any armed admin-side terminal scenarios in
+            Graylog.
+          </p>
+        </div>
+        <div class="hero-actions">
+          <nav class="page-nav">
+            <a class="nav-link" href="/customer/dashboard">Customer Dashboard</a>
+            <a class="nav-link active" href="/customer/book-ticket">Book Ticket</a>
+            <a class="nav-link" href="/customer/buses">Buses In Operation</a>
+            <a class="nav-link" href="/customer/ticket-status">Ticket Status</a>
+          </nav>
+          <form method="post" action="/logout">
+            <button class="secondary" type="submit">Log Out</button>
+          </form>
+        </div>
+      </section>
+
+      <section class="detail-layout">
+        <article class="detail-card detail-card-wide">
+          <div class="card-topline">
+            <p class="eyebrow">Booking Form</p>
+            <span class="status-pill success">POST /api/customer/bookings</span>
+          </div>
+          <h2>Passenger Journey Details</h2>
+          <p class="section-copy">
+            The booking API stores the trip as a ticket record and emits a `customer_ticket_booking`
+            event containing the same route, passenger, seat, bus, and payment details shown here.
+            If an admin has armed DNS tunneling or skimming on the same payment terminal ID, this
+            booking will also trigger those related logs.
+          </p>
+
+          <form
+            class="detail-form"
+            method="post"
+            action="/api/customer/bookings"
+            data-console-form="booking"
+          >
+            <div class="form-grid">
+              <label>
+                <span>Passenger Name</span>
+                <input type="text" name="passenger_name" value="Customer Rider" />
+              </label>
+              <label>
+                <span>Passenger Contact</span>
+                <input type="text" name="passenger_contact" value="9876500999" />
+              </label>
+              <label>
+                <span>Route Name</span>
+                <input type="text" name="route_name" value="Majestic - Whitefield" />
+              </label>
+              <label>
+                <span>Source Stop</span>
+                <input type="text" name="source_stop" value="Majestic" />
+              </label>
+              <label>
+                <span>Destination Stop</span>
+                <input type="text" name="destination_stop" value="Whitefield" />
+              </label>
+              <label>
+                <span>Travel Date</span>
+                <input type="datetime-local" name="travel_date" value="2026-04-06T10:00" />
+              </label>
+              <label>
+                <span>Bus Number</span>
+                <input type="text" name="bus_number" value="KA-01-FM-1142" />
+              </label>
+              <label>
+                <span>Seat Number</span>
+                <input type="text" name="seat_number" value="14B" />
+              </label>
+              <label>
+                <span>Payment Mode</span>
+                <select name="payment_mode">
+                  <option value="Card" selected>Card</option>
+                  <option value="UPI">UPI</option>
+                  <option value="Cash">Cash</option>
+                  <option value="CorporatePass">Corporate Pass</option>
+                </select>
+              </label>
+              <label>
+                <span>Booking Channel</span>
+                <select name="booking_channel">
+                  <option value="kiosk">Kiosk</option>
+                  <option value="mobile_app">Mobile App</option>
+                  <option value="counter">Counter</option>
+                  <option value="partner_portal">Partner Portal</option>
+                </select>
+              </label>
+              <label>
+                <span>Payment Terminal ID</span>
+                <input type="text" name="payment_terminal_id" value="A01-PAY-014" />
+              </label>
+              <label>
+                <span>Fare</span>
+                <input type="number" name="fare" min="0" max="5000" step="0.01" value="45" />
+              </label>
+              <label>
+                <span>Operator Label</span>
+                <input type="text" name="operator_label" value="customer-web-booking" />
+              </label>
+            </div>
+            <label>
+              <span>Travel Note</span>
+              <textarea name="travel_note" rows="4">Morning commute booking from portal</textarea>
+            </label>
+            <div class="form-actions">
+              <button type="submit">Book Ticket</button>
+              <a class="ghost-link" href="/customer/dashboard">Back To Dashboard</a>
+            </div>
+          </form>
+        </article>
+
+        <article class="detail-card">
+          <div class="card-topline">
+            <p class="eyebrow">Graylog Signals</p>
+            <span class="status-pill success">Structured JSON</span>
+          </div>
+          <h2>Expected Events</h2>
+          <ul class="detail-list">
+            <li>`customer_ticket_booking` with passenger, route, bus, seat, and fare fields.</li>
+            <li>`http_access` for the booking API request.</li>
+            <li>Matching admin-armed terminal profiles trigger skimming or DNS logs on submit.</li>
+          </ul>
+          <div class="chip-wrap">
+            <span class="data-chip">message:customer_ticket_booking</span>
+            <span class="data-chip">ticket_number</span>
+            <span class="data-chip">seat_number</span>
+            <span class="data-chip">payment_mode</span>
+            <span class="data-chip">payment_terminal_id</span>
+            <span class="data-chip">message:payment_card_read_anomaly</span>
+            <span class="data-chip">message:dns_tunneling_suspected</span>
+          </div>
+        </article>
+      </section>
+
+      <section class="detail-layout">
+        <article class="detail-card detail-card-wide">
+          <div class="card-topline">
+            <p class="eyebrow">Booking Summary</p>
+            <span class="status-pill neutral">API Response</span>
+          </div>
+          <div id="booking-summary" class="result-empty">
+            Submit the booking form to generate a new ticket and see whether any armed terminal
+            scenario fired on the same request.
+          </div>
+        </article>
+
+        <article class="detail-card">
+          <div class="card-topline">
+            <p class="eyebrow">Raw API Body</p>
+            <span class="status-pill neutral">JSON</span>
+          </div>
+          <pre id="console-response" class="response-pre">Run the console to inspect the response body.</pre>
+        </article>
+      </section>
+    </main>
+    <script src="/console.js"></script>
+  </body>
+</html>

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BTA FMS Login</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body class="login-page">
+    <main class="panel">
+      <p class="eyebrow">Bangalore Transit Authority</p>
+      <h1>Fleet Management System</h1>
+      <p class="subtitle">Asset A04 detection simulator</p>
+      <% if (error) { %>
+        <p class="error-banner"><%= error %></p>
+      <% } %>
+      <form class="stack" method="post" action="/login">
+        <label>
+          <span>Username</span>
+          <input type="text" name="username" autocomplete="username" required />
+        </label>
+        <label>
+          <span>Password</span>
+          <input type="password" name="password" autocomplete="current-password" required />
+        </label>
+        <button type="submit">Sign In</button>
+      </form>
+      <div class="credentials">
+        <p>Admin demo</p>
+        <p><strong>admin</strong> / <strong>transit123</strong></p>
+        <p>Customer demo</p>
+        <p><strong>customer</strong> / <strong>ride123</strong></p>
+      </div>
+    </main>
+  </body>
+</html>

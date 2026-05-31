@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BTA Admin Ticket Console</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body class="workspace-page">
+    <main class="workspace-shell">
+      <section class="hero-band">
+        <div class="hero-copy">
+          <p class="eyebrow">Admin Ticket Intelligence</p>
+          <h1>Fetch Passenger Tickets</h1>
+          <p class="subtitle">
+            Run detailed ticket queries with route, passenger, stop, bus, status, and time filters.
+            The query metadata and request access log are emitted to stdout for Graylog ingestion.
+          </p>
+        </div>
+        <div class="hero-actions">
+          <nav class="page-nav">
+            <a class="nav-link" href="/admin/dashboard">Admin Dashboard</a>
+            <a class="nav-link active" href="/admin/passenger/tickets">Fetch Tickets</a>
+            <a class="nav-link" href="/admin/simulations/auth-sequence">Auth Sequence</a>
+            <a class="nav-link" href="/admin/simulations/dns-tunneling">DNS Tunneling</a>
+            <a class="nav-link" href="/admin/simulations/payment-skimming">Payment Skimming</a>
+            <a class="nav-link" href="/admin/simulations/gps-spoofing">GPS Spoofing</a>
+            <a class="nav-link" href="/admin/simulations/ransomware">Ransomware</a>
+          </nav>
+          <form method="post" action="/logout">
+            <button class="secondary" type="submit">Log Out</button>
+          </form>
+        </div>
+      </section>
+
+      <section class="detail-layout">
+        <article class="detail-card detail-card-wide">
+          <div class="card-topline">
+            <p class="eyebrow">Request Builder</p>
+            <span class="status-pill neutral">GET /api/passenger/tickets</span>
+          </div>
+          <h2>Ticket Search Filters</h2>
+          <p class="section-copy">
+            The API returns matching ticket records and emits a `ticket_console_query` event with
+            the same filter values you submit here.
+          </p>
+
+          <form
+            class="detail-form"
+            method="get"
+            action="/api/passenger/tickets"
+            data-console-form="tickets"
+          >
+            <div class="form-grid">
+              <label>
+                <span>Route Name Contains</span>
+                <input type="text" name="route_name" value="Majestic" />
+              </label>
+              <label>
+                <span>Passenger Name Contains</span>
+                <input type="text" name="passenger_name" value="" />
+              </label>
+              <label>
+                <span>Bus Number Contains</span>
+                <input type="text" name="bus_number" value="KA-01-FM" />
+              </label>
+              <label>
+                <span>Source Stop</span>
+                <input type="text" name="source_stop" value="Majestic" />
+              </label>
+              <label>
+                <span>Destination Stop</span>
+                <input type="text" name="destination_stop" value="" />
+              </label>
+              <label>
+                <span>Status</span>
+                <select name="status">
+                  <option value="all">All</option>
+                  <option value="booked">Booked</option>
+                  <option value="issued">Issued</option>
+                  <option value="validated">Validated</option>
+                </select>
+              </label>
+              <label>
+                <span>Issued After</span>
+                <input type="datetime-local" name="issued_after" value="2026-04-05T08:00" />
+              </label>
+              <label>
+                <span>Result Limit</span>
+                <input type="number" name="limit" min="1" max="200" value="25" />
+              </label>
+              <label>
+                <span>Operator Label</span>
+                <input type="text" name="operator_label" value="admin-ticket-audit" />
+              </label>
+            </div>
+            <div class="form-actions">
+              <button type="submit">Fetch Tickets</button>
+              <a class="ghost-link" href="/admin/dashboard">Back To Dashboard</a>
+            </div>
+          </form>
+        </article>
+
+        <article class="detail-card">
+          <div class="card-topline">
+            <p class="eyebrow">Graylog Signals</p>
+            <span class="status-pill success">Structured JSON</span>
+          </div>
+          <h2>Expected Events</h2>
+          <ul class="detail-list">
+            <li>`http_access` with the exact query string.</li>
+            <li>`ticket_console_query` with route, passenger, stop, bus, status, and limit filters.</li>
+          </ul>
+          <div class="chip-wrap">
+            <span class="data-chip">message:ticket_console_query</span>
+            <span class="data-chip">route_name_filter</span>
+            <span class="data-chip">bus_number_filter</span>
+            <span class="data-chip">status_filter</span>
+          </div>
+        </article>
+      </section>
+
+      <section class="detail-layout">
+        <article class="detail-card detail-card-wide">
+          <div class="card-topline">
+            <p class="eyebrow">Results</p>
+            <span class="status-pill neutral">Rendered Response</span>
+          </div>
+          <div id="tickets-summary" class="result-empty">
+            Submit a query to render the filtered tickets and summary metrics.
+          </div>
+          <div class="table-wrap">
+            <table class="results-table">
+              <thead>
+                <tr>
+                  <th>Ticket</th>
+                  <th>Passenger</th>
+                  <th>Route</th>
+                  <th>Source</th>
+                  <th>Destination</th>
+                  <th>Bus</th>
+                  <th>Seat</th>
+                  <th>Status</th>
+                  <th>Travel Date</th>
+                </tr>
+              </thead>
+              <tbody id="tickets-table-body">
+                <tr>
+                  <td colspan="9" class="table-placeholder">No data loaded yet.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </article>
+
+        <article class="detail-card">
+          <div class="card-topline">
+            <p class="eyebrow">Raw API Body</p>
+            <span class="status-pill neutral">JSON</span>
+          </div>
+          <pre id="console-response" class="response-pre">Run the console to inspect the response body.</pre>
+        </article>
+      </section>
+    </main>
+    <script src="/console.js"></script>
+  </body>
+</html>

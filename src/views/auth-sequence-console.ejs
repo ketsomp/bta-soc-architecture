@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BTA Admin Auth Sequence</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body class="workspace-page">
+    <main class="workspace-shell">
+      <section class="hero-band">
+        <div class="hero-copy">
+          <p class="eyebrow">Windows Security Drill</p>
+          <h1>Authentication Sequence Console</h1>
+          <p class="subtitle">
+            Configure the burst, submit the sequence, and inspect the accepted profile while Graylog
+            receives each failed and successful authentication event. For a manual proof path, the
+            live `/login` page emits the same 4625 and 4624 records.
+          </p>
+        </div>
+        <div class="hero-actions">
+          <nav class="page-nav">
+            <a class="nav-link" href="/admin/dashboard">Admin Dashboard</a>
+            <a class="nav-link" href="/admin/passenger/tickets">Fetch Tickets</a>
+            <a class="nav-link active" href="/admin/simulations/auth-sequence">Auth Sequence</a>
+            <a class="nav-link" href="/admin/simulations/dns-tunneling">DNS Tunneling</a>
+            <a class="nav-link" href="/admin/simulations/payment-skimming">Payment Skimming</a>
+            <a class="nav-link" href="/admin/simulations/gps-spoofing">GPS Spoofing</a>
+            <a class="nav-link" href="/admin/simulations/ransomware">Ransomware</a>
+          </nav>
+          <form method="post" action="/logout">
+            <button class="secondary" type="submit">Log Out</button>
+          </form>
+        </div>
+      </section>
+
+      <section class="detail-layout">
+        <article class="detail-card detail-card-wide">
+          <div class="card-topline">
+            <p class="eyebrow">Sequence Controls</p>
+            <span class="status-pill warn">POST /api/simulations/auth-sequence</span>
+          </div>
+          <h2>Failed Logins Followed By Success</h2>
+          <p class="section-copy">
+            This is the direct proof path for Hypothesis 1. The submitted values are echoed back in
+            the API response and embedded into the emitted `4625` and `4624` records so Graylog can
+            search them directly.
+          </p>
+
+          <form
+            class="detail-form"
+            method="post"
+            action="/api/simulations/auth-sequence"
+            data-console-form="auth"
+          >
+            <div class="form-grid">
+              <label>
+                <span>Simulation Secret</span>
+                <input type="text" name="simulation_secret" value="<%= simulationSecret %>" />
+              </label>
+              <label>
+                <span>Username</span>
+                <input type="text" name="username" value="dispatcher.scheduler" />
+              </label>
+              <label>
+                <span>Failure Count</span>
+                <input type="number" name="failure_count" min="1" max="100" value="10" />
+              </label>
+              <label>
+                <span>Workstation Name</span>
+                <input type="text" name="workstation_name" value="BTA-OPS-07" />
+              </label>
+              <label>
+                <span>Source Label</span>
+                <input type="text" name="source_label" value="night-shift-console" />
+              </label>
+              <label>
+                <span>Failure Reason</span>
+                <select name="failure_reason">
+                  <option value="bad_password">Bad Password</option>
+                  <option value="locked_account">Locked Account</option>
+                  <option value="expired_password">Expired Password</option>
+                </select>
+              </label>
+              <label>
+                <span>Success Logon Type</span>
+                <select name="success_logon_type">
+                  <option value="Interactive">Interactive</option>
+                  <option value="RemoteInteractive">RemoteInteractive</option>
+                  <option value="Network">Network</option>
+                </select>
+              </label>
+              <label>
+                <span>Correlation Key</span>
+                <input type="text" name="correlation_key" value="AUTH-BTA-042" />
+              </label>
+            </div>
+            <label>
+              <span>Operator Note</span>
+              <textarea name="operator_note" rows="4">Auth burst driven from the admin web console for Graylog validation.</textarea>
+            </label>
+            <div class="form-actions">
+              <button type="submit">Run Auth Sequence</button>
+              <a class="ghost-link" href="/admin/dashboard">Back To Dashboard</a>
+            </div>
+          </form>
+        </article>
+
+        <article class="detail-card">
+          <div class="card-topline">
+            <p class="eyebrow">Expected Events</p>
+            <span class="status-pill success">Graylog Ready</span>
+          </div>
+          <h2>What Will Be Emitted</h2>
+          <ul class="detail-list">
+            <li>Repeated `event_id: 4625` failures with the configured failure count.</li>
+            <li>One `event_id: 4624` success with the same correlation key.</li>
+            <li>Base fields on every record: `timestamp`, `app_name`, `src_ip`, `severity`.</li>
+          </ul>
+          <div class="chip-wrap">
+            <span class="data-chip">event_id:4625</span>
+            <span class="data-chip">event_id:4624</span>
+            <span class="data-chip">workstation_name</span>
+            <span class="data-chip">correlation_key</span>
+          </div>
+        </article>
+      </section>
+
+      <section class="detail-layout">
+        <article class="detail-card detail-card-wide">
+          <div class="card-topline">
+            <p class="eyebrow">Run Summary</p>
+            <span class="status-pill neutral">API Response</span>
+          </div>
+          <div id="simulation-summary" class="result-empty">
+            Run the sequence to view the accepted profile and event count.
+          </div>
+        </article>
+
+        <article class="detail-card">
+          <div class="card-topline">
+            <p class="eyebrow">Raw API Body</p>
+            <span class="status-pill neutral">JSON</span>
+          </div>
+          <pre id="console-response" class="response-pre">Run the console to inspect the response body.</pre>
+        </article>
+      </section>
+    </main>
+    <script src="/console.js"></script>
+  </body>
+</html>

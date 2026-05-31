@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BTA FMS Admin Dashboard</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body class="workspace-page">
+    <main class="workspace-shell">
+      <section class="hero-band">
+        <div class="hero-copy">
+          <p class="eyebrow">Admin Operations</p>
+          <h1>BTA Fleet Management Admin Console</h1>
+          <p class="subtitle">
+            Signed in as <strong><%= user.username %></strong>. Use the admin workspaces to query
+            ticket activity, arm scenario profiles, and search the resulting JSON in Graylog after
+            triggering them from live customer flows where applicable.
+          </p>
+        </div>
+        <div class="hero-actions">
+          <nav class="page-nav">
+            <a class="nav-link active" href="/admin/dashboard">Admin Dashboard</a>
+            <a class="nav-link" href="/admin/passenger/tickets">Fetch Tickets</a>
+            <a class="nav-link" href="/admin/simulations/auth-sequence">Auth Sequence</a>
+            <a class="nav-link" href="/admin/simulations/dns-tunneling">DNS Tunneling</a>
+            <a class="nav-link" href="/admin/simulations/payment-skimming">Payment Skimming</a>
+            <a class="nav-link" href="/admin/simulations/gps-spoofing">GPS Spoofing</a>
+            <a class="nav-link" href="/admin/simulations/ransomware">Ransomware</a>
+          </nav>
+          <form method="post" action="/logout">
+            <button class="secondary" type="submit">Log Out</button>
+          </form>
+        </div>
+      </section>
+
+      <section class="metric-grid">
+        <article class="metric-card">
+          <p class="metric-label">App Name</p>
+          <p class="metric-value">bta-fms</p>
+        </article>
+        <article class="metric-card">
+          <p class="metric-label">Role</p>
+          <p class="metric-value">admin</p>
+        </article>
+        <article class="metric-card">
+          <p class="metric-label">Simulation Secret</p>
+          <p class="metric-value"><%= simulationSecret %></p>
+        </article>
+        <article class="metric-card">
+          <p class="metric-label">Graylog Search</p>
+          <p class="metric-value">app_name:bta-fms</p>
+        </article>
+      </section>
+
+      <section class="operation-grid">
+        <article class="operation-card">
+          <div class="card-topline">
+            <p class="eyebrow">Ticket Intelligence</p>
+            <span class="status-pill neutral">HTTP + Lookup Logs</span>
+          </div>
+          <h2>Fetch Tickets</h2>
+          <p>
+            Query ticket activity with route, passenger, stop, bus, status, and time filters. Each
+            fetch produces `http_access` and `ticket_console_query` events with your selected
+            fields.
+          </p>
+          <ul class="detail-list">
+            <li>Default filters target Majestic traffic and issued tickets.</li>
+            <li>Result payloads stay visible in the page after every run.</li>
+          </ul>
+          <a class="link-button" href="/admin/passenger/tickets">Open Ticket Console</a>
+        </article>
+
+        <article class="operation-card">
+          <div class="card-topline">
+            <p class="eyebrow">Authentication Drill</p>
+            <span class="status-pill warn">4625 / 4624</span>
+          </div>
+          <h2>Auth Sequence</h2>
+          <p>
+            Emit a configurable burst of failed sign-ins followed by success, with workstation,
+            source, correlation, and operator notes preserved in the log payloads.
+          </p>
+          <ul class="detail-list">
+            <li>Useful for brute-force style threshold validation in Graylog.</li>
+            <li>The real `/login` page can also prove the same pattern manually.</li>
+          </ul>
+          <a class="link-button" href="/admin/simulations/auth-sequence">Open Auth Console</a>
+        </article>
+
+        <article class="operation-card">
+          <div class="card-topline">
+            <p class="eyebrow">Hypothesis 2</p>
+            <span class="status-pill warn">DNS TXT Burst</span>
+          </div>
+          <h2>DNS Tunneling From Payment Terminals</h2>
+          <p>
+            Arm a payment terminal profile here, then open the customer booking page in a second
+            session and submit a booking with the same terminal ID to prove the DNS tunneling
+            exfiltration hypothesis.
+          </p>
+          <ul class="detail-list">
+            <li>Arming emits `dns_tunneling_armed` for operator visibility.</li>
+            <li>The actual DNS burst is produced by the matching customer payment path.</li>
+          </ul>
+          <a class="link-button" href="/admin/simulations/dns-tunneling">Open DNS Console</a>
+        </article>
+
+        <article class="operation-card">
+          <div class="card-topline">
+            <p class="eyebrow">Confidentiality</p>
+            <span class="status-pill danger">A01 Tamper</span>
+          </div>
+          <h2>Payment Terminal Skimming</h2>
+          <p>
+            Arm a compromised terminal here, then trigger a real booking through the matching
+            terminal ID from the customer page so Graylog sees tamper, read-anomaly, and exfil
+            evidence tied to that transaction.
+          </p>
+          <ul class="detail-list">
+            <li>Arming emits the tamper event immediately.</li>
+            <li>The card-read and exfil logs are generated by the customer payment flow.</li>
+          </ul>
+          <a class="link-button" href="/admin/simulations/payment-skimming">Open Skimming Console</a>
+        </article>
+
+        <article class="operation-card">
+          <div class="card-topline">
+            <p class="eyebrow">Integrity</p>
+            <span class="status-pill neutral">A03 Navigation</span>
+          </div>
+          <h2>GPS Spoofing Injection</h2>
+          <p>
+            Arm a bus spoofing profile here, then open the customer bus page and fetch the matching
+            route to prove how falsified GPS signals create ghost-bus misinformation.
+          </p>
+          <ul class="detail-list">
+            <li>The customer fleet table will visibly show the spoofed location fields.</li>
+            <li>The same lookup emits anomaly and ghost-bus logs to Graylog.</li>
+          </ul>
+          <a class="link-button" href="/admin/simulations/gps-spoofing">Open GPS Console</a>
+        </article>
+
+        <article class="operation-card">
+          <div class="card-topline">
+            <p class="eyebrow">Impact Drill</p>
+            <span class="status-pill danger">7045 + FIM + C2</span>
+          </div>
+          <h2>Ransomware Sequence</h2>
+          <p>
+            Configure asset tag, service name, directory, beaconing target, and pacing. The staged
+            run emits service creation, file write bursts, note creation, and outbound traffic.
+          </p>
+          <ul class="detail-list">
+            <li>Supports custom event counts and timing.</li>
+            <li>Profile values flow through to all emitted structured JSON logs.</li>
+          </ul>
+          <a class="link-button" href="/admin/simulations/ransomware">Open Ransomware Console</a>
+        </article>
+      </section>
+
+      <section class="detail-layout">
+        <article class="detail-card detail-card-wide">
+          <div class="card-topline">
+            <p class="eyebrow">Graylog Visibility</p>
+            <span class="status-pill success">Quick Search Keys</span>
+          </div>
+          <h2>Admin Log Queries</h2>
+          <div class="chip-wrap">
+            <span class="data-chip">app_name:bta-fms</span>
+            <span class="data-chip">message:ticket_console_query</span>
+            <span class="data-chip">event_id:4625</span>
+            <span class="data-chip">event_id:4624</span>
+            <span class="data-chip">message:dns_tunneling_suspected</span>
+            <span class="data-chip">message:payment_terminal_tamper</span>
+            <span class="data-chip">message:payment_card_read_anomaly</span>
+            <span class="data-chip">message:payment_data_exfil_attempt</span>
+            <span class="data-chip">message:gps_signal_anomaly</span>
+            <span class="data-chip">message:ghost_bus_projection</span>
+            <span class="data-chip">event_id:7045</span>
+            <span class="data-chip">action:file_write</span>
+            <span class="data-chip">action:file_create</span>
+            <span class="data-chip">protocol:DNS</span>
+          </div>
+        </article>
+
+        <article class="detail-card">
+          <div class="card-topline">
+            <p class="eyebrow">Graylog Workflow</p>
+            <span class="status-pill neutral">Search</span>
+          </div>
+          <ul class="detail-list">
+            <li>Run the form from one of the admin consoles.</li>
+            <li>For DNS, skimming, and GPS, trigger the matching customer action after arming.</li>
+            <li>Open Graylog Search and set the time range to the last 15 minutes.</li>
+            <li>Query `app_name:bta-fms` and add a specific field from the chips above.</li>
+          </ul>
+        </article>
+      </section>
+    </main>
+  </body>
+</html>

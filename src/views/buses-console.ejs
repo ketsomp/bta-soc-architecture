@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BTA Customer Bus Operations</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body class="workspace-page">
+    <main class="workspace-shell">
+      <section class="hero-band">
+        <div class="hero-copy">
+          <p class="eyebrow">Fleet Visibility</p>
+          <h1>Buses Currently In Operation</h1>
+          <p class="subtitle">
+            Search active buses by route and stop coverage, then compare the rendered fleet results
+            with the lookup event that Graylog receives. If an admin has armed GPS spoofing for one
+            of the returned buses, the rendered location fields below will show the spoofed view.
+          </p>
+        </div>
+        <div class="hero-actions">
+          <nav class="page-nav">
+            <a class="nav-link" href="/customer/dashboard">Customer Dashboard</a>
+            <a class="nav-link" href="/customer/book-ticket">Book Ticket</a>
+            <a class="nav-link active" href="/customer/buses">Buses In Operation</a>
+            <a class="nav-link" href="/customer/ticket-status">Ticket Status</a>
+          </nav>
+          <form method="post" action="/logout">
+            <button class="secondary" type="submit">Log Out</button>
+          </form>
+        </div>
+      </section>
+
+      <section class="detail-layout">
+        <article class="detail-card detail-card-wide">
+          <div class="card-topline">
+            <p class="eyebrow">Bus Search</p>
+            <span class="status-pill neutral">GET /api/customer/buses</span>
+          </div>
+          <h2>Route And Fleet Filters</h2>
+          <p class="section-copy">
+            The lookup emits `customer_bus_lookup` with the route, stop, vehicle-status, and
+            operator-label values selected below. Armed GPS scenarios are applied to the matching
+            bus at render time so the customer page and Graylog both reflect the same integrity
+            issue.
+          </p>
+
+          <form
+            class="detail-form"
+            method="get"
+            action="/api/customer/buses"
+            data-console-form="buses"
+          >
+            <div class="form-grid">
+              <label>
+                <span>Route Name Contains</span>
+                <input type="text" name="route_name" value="Majestic" />
+              </label>
+              <label>
+                <span>Origin Stop</span>
+                <input type="text" name="origin_stop" value="Majestic" />
+              </label>
+              <label>
+                <span>Destination Stop</span>
+                <input type="text" name="destination_stop" value="Whitefield" />
+              </label>
+              <label>
+                <span>Vehicle Status</span>
+                <select name="vehicle_status">
+                  <option value="all">All</option>
+                  <option value="in_service">In Service</option>
+                  <option value="boarding">Boarding</option>
+                  <option value="layover">Layover</option>
+                </select>
+              </label>
+              <label>
+                <span>Result Limit</span>
+                <input type="number" name="limit" min="1" max="100" value="12" />
+              </label>
+              <label>
+                <span>Operator Label</span>
+                <input type="text" name="operator_label" value="customer-bus-refresh" />
+              </label>
+            </div>
+            <div class="form-actions">
+              <button type="submit">Fetch Buses</button>
+              <a class="ghost-link" href="/customer/dashboard">Back To Dashboard</a>
+            </div>
+          </form>
+        </article>
+
+        <article class="detail-card">
+          <div class="card-topline">
+            <p class="eyebrow">Graylog Signals</p>
+            <span class="status-pill success">Structured JSON</span>
+          </div>
+          <h2>Expected Events</h2>
+          <ul class="detail-list">
+            <li>`customer_bus_lookup` with route and stop filters.</li>
+            <li>`http_access` showing the exact bus-query string.</li>
+            <li>Matching armed buses also emit `gps_signal_anomaly` and `ghost_bus_projection`.</li>
+          </ul>
+          <div class="chip-wrap">
+            <span class="data-chip">message:customer_bus_lookup</span>
+            <span class="data-chip">vehicle_status_filter</span>
+            <span class="data-chip">route_name_filter</span>
+            <span class="data-chip">message:gps_signal_anomaly</span>
+            <span class="data-chip">message:ghost_bus_projection</span>
+          </div>
+        </article>
+      </section>
+
+      <section class="detail-layout">
+        <article class="detail-card detail-card-wide">
+          <div class="card-topline">
+            <p class="eyebrow">Fleet Results</p>
+            <span class="status-pill neutral">Rendered Response</span>
+          </div>
+          <div id="buses-summary" class="result-empty">
+            Run a bus lookup to render active fleet entries and summary metrics.
+          </div>
+          <div class="table-wrap">
+            <table class="results-table">
+              <thead>
+                <tr>
+                  <th>Bus</th>
+                  <th>Route</th>
+                  <th>Displayed Location</th>
+                  <th>Expected Location</th>
+                  <th>Spoofed Location</th>
+                  <th>Displayed Stop</th>
+                  <th>Destination</th>
+                  <th>Integrity</th>
+                  <th>Schedule Delta</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="buses-table-body">
+                <tr>
+                  <td colspan="10" class="table-placeholder">No buses loaded yet.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </article>
+
+        <article class="detail-card">
+          <div class="card-topline">
+            <p class="eyebrow">Raw API Body</p>
+            <span class="status-pill neutral">JSON</span>
+          </div>
+          <pre id="console-response" class="response-pre">Run the console to inspect the response body.</pre>
+        </article>
+      </section>
+    </main>
+    <script src="/console.js"></script>
+  </body>
+</html>

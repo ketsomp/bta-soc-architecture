@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BTA Admin Payment Skimming</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body class="workspace-page">
+    <main class="workspace-shell">
+      <section class="hero-band">
+        <div class="hero-copy">
+          <p class="eyebrow">Confidentiality Scenario</p>
+          <h1>Payment Data Skimming</h1>
+          <p class="subtitle">
+            Arm a compromised contactless terminal here, then trigger the evidence from a live
+            customer booking that uses the same terminal ID.
+          </p>
+        </div>
+        <div class="hero-actions">
+          <nav class="page-nav">
+            <a class="nav-link" href="/admin/dashboard">Admin Dashboard</a>
+            <a class="nav-link" href="/admin/passenger/tickets">Fetch Tickets</a>
+            <a class="nav-link" href="/admin/simulations/auth-sequence">Auth Sequence</a>
+            <a class="nav-link" href="/admin/simulations/dns-tunneling">DNS Tunneling</a>
+            <a class="nav-link active" href="/admin/simulations/payment-skimming">Payment Skimming</a>
+            <a class="nav-link" href="/admin/simulations/gps-spoofing">GPS Spoofing</a>
+            <a class="nav-link" href="/admin/simulations/ransomware">Ransomware</a>
+          </nav>
+          <form method="post" action="/logout">
+            <button class="secondary" type="submit">Log Out</button>
+          </form>
+        </div>
+      </section>
+
+      <section class="detail-layout">
+        <article class="detail-card detail-card-wide">
+          <div class="card-topline">
+            <p class="eyebrow">Terminal Compromise Profile</p>
+            <span class="status-pill danger">POST /api/simulations/payment-skimming</span>
+          </div>
+          <h2>Skimming Activity Generator</h2>
+          <p class="section-copy">
+            Use this console to arm the payment-terminal skimming scenario. The tamper event is
+            emitted immediately, and the anomalous card-read plus exfiltration events are emitted
+            when a matching customer booking is submitted.
+          </p>
+
+          <form
+            class="detail-form"
+            method="post"
+            action="/api/simulations/payment-skimming"
+            data-console-form="payment-skimming"
+          >
+            <div class="form-grid">
+              <label>
+                <span>Simulation Secret</span>
+                <input type="text" name="simulation_secret" value="<%= simulationSecret %>" />
+              </label>
+              <label>
+                <span>Terminal ID</span>
+                <input type="text" name="terminal_id" value="A01-PAY-022" />
+              </label>
+              <label>
+                <span>Terminal Site</span>
+                <input type="text" name="terminal_site" value="Central Station North Gate" />
+              </label>
+              <label>
+                <span>Firmware Version</span>
+                <input type="text" name="firmware_version" value="fw-7.14.2" />
+              </label>
+              <label>
+                <span>Tamper Source</span>
+                <input type="text" name="tamper_source" value="contactless-sidecar" />
+              </label>
+              <label>
+                <span>Skimmed Card Count</span>
+                <input type="number" name="skimmed_card_count" min="1" max="100" value="6" />
+              </label>
+              <label>
+                <span>Collector Domain</span>
+                <input type="text" name="collector_domain" value="collector.attacker-domain.com" />
+              </label>
+              <label>
+                <span>Bytes Sent</span>
+                <input type="number" name="bytes_sent" min="100" max="5000000" value="18432" />
+              </label>
+              <label>
+                <span>Read Interval (ms)</span>
+                <input type="number" name="read_interval_ms" min="0" max="5000" value="35" />
+              </label>
+            </div>
+            <label>
+              <span>Operator Note</span>
+              <textarea name="operator_note" rows="4">Payment-terminal skimming drill for confidentiality-impact validation.</textarea>
+            </label>
+            <div class="form-actions">
+              <button type="submit">Arm Payment Skimming</button>
+              <a class="ghost-link" href="/admin/dashboard">Back To Dashboard</a>
+            </div>
+          </form>
+        </article>
+
+        <article class="detail-card">
+          <div class="card-topline">
+            <p class="eyebrow">Expected Events</p>
+            <span class="status-pill success">Graylog Ready</span>
+          </div>
+          <h2>What Will Be Emitted</h2>
+          <ul class="detail-list">
+            <li>`message:payment_terminal_tamper` is emitted when the terminal is armed.</li>
+            <li>`message:payment_card_read_anomaly` bursts are emitted by the matching customer payment.</li>
+            <li>`message:payment_data_exfil_attempt` is tied to the same terminal and booking context.</li>
+          </ul>
+          <div class="chip-wrap">
+            <span class="data-chip">message:payment_terminal_tamper</span>
+            <span class="data-chip">message:payment_card_read_anomaly</span>
+            <span class="data-chip">message:payment_data_exfil_attempt</span>
+            <span class="data-chip">terminal_id</span>
+          </div>
+        </article>
+      </section>
+
+      <section class="detail-layout">
+        <article class="detail-card detail-card-wide">
+          <div class="card-topline">
+            <p class="eyebrow">Run Summary</p>
+            <span class="status-pill neutral">API Response</span>
+          </div>
+          <div id="simulation-summary" class="result-empty">
+            Arm the terminal to view the accepted profile, then submit a customer booking with the
+            same terminal ID to generate the skimming evidence.
+          </div>
+        </article>
+
+        <article class="detail-card">
+          <div class="card-topline">
+            <p class="eyebrow">Raw API Body</p>
+            <span class="status-pill neutral">JSON</span>
+          </div>
+          <pre id="console-response" class="response-pre">Run the console to inspect the response body.</pre>
+        </article>
+      </section>
+    </main>
+    <script src="/console.js"></script>
+  </body>
+</html>

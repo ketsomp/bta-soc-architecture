@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BTA Admin Ransomware Sequence</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body class="workspace-page">
+    <main class="workspace-shell">
+      <section class="hero-band">
+        <div class="hero-copy">
+          <p class="eyebrow">Impact Simulation</p>
+          <h1>Ransomware Execution Console</h1>
+          <p class="subtitle">
+            Configure the execution profile, submit the run from the browser, and let Graylog
+            ingest the persistence, encryption, note-creation, and beaconing events from stdout as
+            a staged A04 asset drill.
+          </p>
+        </div>
+        <div class="hero-actions">
+          <nav class="page-nav">
+            <a class="nav-link" href="/admin/dashboard">Admin Dashboard</a>
+            <a class="nav-link" href="/admin/passenger/tickets">Fetch Tickets</a>
+            <a class="nav-link" href="/admin/simulations/auth-sequence">Auth Sequence</a>
+            <a class="nav-link" href="/admin/simulations/dns-tunneling">DNS Tunneling</a>
+            <a class="nav-link" href="/admin/simulations/payment-skimming">Payment Skimming</a>
+            <a class="nav-link" href="/admin/simulations/gps-spoofing">GPS Spoofing</a>
+            <a class="nav-link active" href="/admin/simulations/ransomware">Ransomware</a>
+          </nav>
+          <form method="post" action="/logout">
+            <button class="secondary" type="submit">Log Out</button>
+          </form>
+        </div>
+      </section>
+
+      <section class="detail-layout">
+        <article class="detail-card detail-card-wide">
+          <div class="card-topline">
+            <p class="eyebrow">Execution Profile</p>
+            <span class="status-pill danger">POST /api/simulations/ransomware</span>
+          </div>
+          <h2>Ransomware Event Generator</h2>
+          <p class="section-copy">
+            The values below are applied directly to the emitted `7045`, `file_write`,
+            `file_create`, and outbound traffic records, making each field available in Graylog.
+          </p>
+
+          <form
+            class="detail-form"
+            method="post"
+            action="/api/simulations/ransomware"
+            data-console-form="ransomware"
+          >
+            <div class="form-grid">
+              <label>
+                <span>Simulation Secret</span>
+                <input type="text" name="simulation_secret" value="<%= simulationSecret %>" />
+              </label>
+              <label>
+                <span>Asset Tag</span>
+                <input type="text" name="asset_tag" value="A04" />
+              </label>
+              <label>
+                <span>Operation Name</span>
+                <input type="text" name="operation_name" value="Depot file encryption drill" />
+              </label>
+              <label>
+                <span>Service Name</span>
+                <input type="text" name="service_name" value="SysUpdate1" />
+              </label>
+              <label>
+                <span>Encrypted File Count</span>
+                <input type="number" name="encrypted_file_count" min="1" max="200" value="50" />
+              </label>
+              <label>
+                <span>File Extension</span>
+                <input type="text" name="file_extension" value=".locked" />
+              </label>
+              <label>
+                <span>Target Directory</span>
+                <input type="text" name="target_directory" value="C:\TransitData\Operations" />
+              </label>
+              <label>
+                <span>Ransom Note Name</span>
+                <input type="text" name="ransom_note_name" value="DECRYPT_FILES.txt" />
+              </label>
+              <label>
+                <span>Destination IP</span>
+                <input type="text" name="dest_ip" value="malicious_c2_ip" />
+              </label>
+              <label>
+                <span>Destination Port</span>
+                <input type="number" name="dest_port" min="1" max="65535" value="443" />
+              </label>
+              <label>
+                <span>File Delay (ms)</span>
+                <input type="number" name="file_delay_ms" min="10" max="5000" value="80" />
+              </label>
+              <label>
+                <span>Beacon Delay (ms)</span>
+                <input type="number" name="beacon_delay_ms" min="10" max="10000" value="900" />
+              </label>
+            </div>
+            <label>
+              <span>Encryption Message</span>
+              <input
+                type="text"
+                name="encryption_message"
+                value="rapid file encryption detected"
+              />
+            </label>
+            <label>
+              <span>Beacon Message</span>
+              <input type="text" name="beacon_message" value="beaconing traffic every 60s" />
+            </label>
+            <div class="form-actions">
+              <button type="submit">Run Ransomware</button>
+              <a class="ghost-link" href="/admin/dashboard">Back To Dashboard</a>
+            </div>
+          </form>
+        </article>
+
+        <article class="detail-card">
+          <div class="card-topline">
+            <p class="eyebrow">Expected Events</p>
+            <span class="status-pill success">Stage Sequence</span>
+          </div>
+          <h2>What Will Be Emitted</h2>
+          <ul class="detail-list">
+            <li>One `7045` service install event using the configured asset and operation fields.</li>
+            <li>A burst of file-write events with the chosen file count, directory, and extension.</li>
+            <li>One ransom note event and one beacon event with your destination fields.</li>
+          </ul>
+          <div class="chip-wrap">
+            <span class="data-chip">event_id:7045</span>
+            <span class="data-chip">action:file_write</span>
+            <span class="data-chip">action:file_create</span>
+            <span class="data-chip">dest_port</span>
+          </div>
+        </article>
+      </section>
+
+      <section class="detail-layout">
+        <article class="detail-card detail-card-wide">
+          <div class="card-topline">
+            <p class="eyebrow">Run Summary</p>
+            <span class="status-pill neutral">API Response</span>
+          </div>
+          <div id="simulation-summary" class="result-empty">
+            Run the console to view the accepted ransomware profile and expected event count.
+          </div>
+        </article>
+
+        <article class="detail-card">
+          <div class="card-topline">
+            <p class="eyebrow">Raw API Body</p>
+            <span class="status-pill neutral">JSON</span>
+          </div>
+          <pre id="console-response" class="response-pre">Run the console to inspect the response body.</pre>
+        </article>
+      </section>
+    </main>
+    <script src="/console.js"></script>
+  </body>
+</html>

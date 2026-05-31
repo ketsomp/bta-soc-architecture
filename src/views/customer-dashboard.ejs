@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BTA FMS Customer Dashboard</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body class="workspace-page">
+    <main class="workspace-shell">
+      <section class="hero-band">
+        <div class="hero-copy">
+          <p class="eyebrow">Customer Services</p>
+          <h1>BTA Passenger Services Portal</h1>
+          <p class="subtitle">
+            Signed in as <strong><%= user.username %></strong>. Book tickets, inspect active buses,
+            and check ticket state from the customer workspace while every action emits structured
+            JSON logs for Graylog.
+          </p>
+        </div>
+        <div class="hero-actions">
+          <nav class="page-nav">
+            <a class="nav-link active" href="/customer/dashboard">Customer Dashboard</a>
+            <a class="nav-link" href="/customer/book-ticket">Book Ticket</a>
+            <a class="nav-link" href="/customer/buses">Buses In Operation</a>
+            <a class="nav-link" href="/customer/ticket-status">Ticket Status</a>
+          </nav>
+          <form method="post" action="/logout">
+            <button class="secondary" type="submit">Log Out</button>
+          </form>
+        </div>
+      </section>
+
+      <section class="metric-grid">
+        <article class="metric-card">
+          <p class="metric-label">App Name</p>
+          <p class="metric-value">bta-fms</p>
+        </article>
+        <article class="metric-card">
+          <p class="metric-label">Role</p>
+          <p class="metric-value">customer</p>
+        </article>
+        <article class="metric-card">
+          <p class="metric-label">Graylog Search</p>
+          <p class="metric-value">app_name:bta-fms</p>
+        </article>
+        <article class="metric-card">
+          <p class="metric-label">Bus Updates</p>
+          <p class="metric-value">Live JSON lookups</p>
+        </article>
+      </section>
+
+      <section class="operation-grid">
+        <article class="operation-card">
+          <div class="card-topline">
+            <p class="eyebrow">Booking</p>
+            <span class="status-pill success">customer_ticket_booking</span>
+          </div>
+          <h2>Book Ticket</h2>
+          <p>
+            Fill in passenger, route, bus, seat, payment, and travel details. Submitting the form
+            creates a new booking record and emits a dedicated booking log for Graylog. The same
+            page can also trigger any admin-armed payment terminal scenario when the terminal ID
+            matches.
+          </p>
+          <ul class="detail-list">
+            <li>Pre-filled defaults mirror a realistic daily commute booking.</li>
+            <li>The response shows the generated BTA ticket number immediately.</li>
+            <li>Use the same terminal ID as the admin DNS or skimming profile to prove that path.</li>
+          </ul>
+          <a class="link-button" href="/customer/book-ticket">Open Booking Console</a>
+        </article>
+
+        <article class="operation-card">
+          <div class="card-topline">
+            <p class="eyebrow">Operations</p>
+            <span class="status-pill neutral">customer_bus_lookup</span>
+          </div>
+          <h2>Current Buses</h2>
+          <p>
+            Search buses in operation by route, origin, destination, and vehicle status. The page
+            returns live bus cards and logs the exact query fields you used. If an admin has armed a
+            spoofing profile, the returned bus view will reflect the ghost-bus data.
+          </p>
+          <ul class="detail-list">
+            <li>Useful for route discovery and current fleet visibility.</li>
+            <li>Every lookup remains visible in Graylog with operator labels.</li>
+            <li>Matching spoofed buses emit GPS anomaly logs on the same lookup.</li>
+          </ul>
+          <a class="link-button" href="/customer/buses">Open Bus Console</a>
+        </article>
+
+        <article class="operation-card">
+          <div class="card-topline">
+            <p class="eyebrow">Ticket Tracking</p>
+            <span class="status-pill warn">customer_ticket_status_lookup</span>
+          </div>
+          <h2>Check Ticket Status</h2>
+          <p>
+            Search by ticket number, passenger, contact, bus, or status. The page returns matching
+            tickets and emits a structured ticket-status lookup event for Graylog visibility.
+          </p>
+          <ul class="detail-list">
+            <li>Supports broad searches or exact ticket lookups.</li>
+            <li>Rendered results and raw JSON stay on-screen after each query.</li>
+          </ul>
+          <a class="link-button" href="/customer/ticket-status">Open Status Console</a>
+        </article>
+      </section>
+
+      <section class="detail-layout">
+        <article class="detail-card detail-card-wide">
+          <div class="card-topline">
+            <p class="eyebrow">Graylog Visibility</p>
+            <span class="status-pill success">Quick Search Keys</span>
+          </div>
+          <h2>Customer Log Queries</h2>
+          <div class="chip-wrap">
+            <span class="data-chip">app_name:bta-fms</span>
+            <span class="data-chip">message:customer_ticket_booking</span>
+            <span class="data-chip">message:customer_bus_lookup</span>
+            <span class="data-chip">message:customer_ticket_status_lookup</span>
+            <span class="data-chip">message:payment_card_read_anomaly</span>
+            <span class="data-chip">message:dns_tunneling_suspected</span>
+            <span class="data-chip">message:gps_signal_anomaly</span>
+            <span class="data-chip">message:http_access</span>
+          </div>
+        </article>
+
+        <article class="detail-card">
+          <div class="card-topline">
+            <p class="eyebrow">How To Verify</p>
+            <span class="status-pill neutral">Graylog</span>
+          </div>
+          <ul class="detail-list">
+            <li>Run an action from one of the customer consoles.</li>
+            <li>For hands-on admin scenarios, first arm the terminal or bus from the admin dashboard.</li>
+            <li>Search `app_name:bta-fms` in Graylog with a recent time range.</li>
+            <li>Add one of the message names above to isolate the event category.</li>
+          </ul>
+        </article>
+      </section>
+    </main>
+  </body>
+</html>
